@@ -7,5 +7,5 @@ class Simulation {
         Simulation();
         void run();
     private:
-        std::vector<sf::CircleShape> c;
+        std::vector<sf::CircleShape> boids;
 };
