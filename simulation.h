@@ -4,7 +4,7 @@
 
 class Simulation {
     public:
-        Simulation();
+        Simulation(int window_width, int window_height,int count);
         void run();
     private:
         sf::RenderWindow window;
@@ -12,4 +12,5 @@ class Simulation {
         std::vector<sf::Vector2f> boidsV;
         int window_width;
         int window_height;
+        int boidsCount;
 };
