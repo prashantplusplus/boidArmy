@@ -1,6 +1,11 @@
 #include <iostream>
+#include <vector>
+#include "boids.h"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+
+#ifndef SIM_H
+#define SIM_H
 
 class Simulation {
     public:
@@ -9,8 +14,11 @@ class Simulation {
     private:
         sf::RenderWindow window;
         std::vector<sf::CircleShape> boids;
-        std::vector<sf::Vector2f> boidsV;
+        std::vector<Boids> boidsObj;
         int window_width;
         int window_height;
         int boidsCount;
 };
+
+
+#endif
