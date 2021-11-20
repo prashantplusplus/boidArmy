@@ -13,15 +13,15 @@ Simulation::Simulation(int window_width, int window_height,int count)
 void Simulation::run()
 {
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Boids Army");
-    window.setFramerateLimit(24);
-    window.clear(sf::Color::Black);
+    window.setFramerateLimit(60);
+    window.clear(sf::Color::White);
     for (int i = 0; i < boidsCount; i++)
     {
         std::random_device rd;                          // obtain a random number from hardware
         std::mt19937 gen(rd());                         // seed the generator
         std::uniform_int_distribution<> distrX(50, window_width-50); // define the range
         std::uniform_int_distribution<> distrY(50, window_height-50); // define the range
-        std::uniform_int_distribution<> distr2(-3, 3); // define the range
+        std::uniform_int_distribution<> distr2(-4, 4); // define the range
 
         //init velocity
         int newVelocityX = distr2(gen);
@@ -56,14 +56,9 @@ void Simulation::run()
         colors.push_back(sf::Color(142, 68, 173, 255));
         sf::Color color = colors[rand() % 7];
 
-
-        sf::CircleShape circle_boids(2);
-        circle_boids.setFillColor(color);
-        circle_boids.setPosition(pos.x, pos.y);
         Boids boid_object(color,pos,velocity);
 
         boidsObj.push_back(boid_object);
-        boids.push_back(circle_boids);
     }
 
     while (window.isOpen())
@@ -75,29 +70,16 @@ void Simulation::run()
                 window.close();
         }
 
-        
+    
         window.clear(sf::Color::White);
-        for (int i = 0; i < boids.size(); i++)
-        {
-            // boids[i].move(boidsObj[i].getVelocity().x, boidsObj[i].getVelocity().y);
-            // boidsObj[i].setPositionX(boidsObj[i].getPosition().x + boidsObj[i].getVelocity().x);
-            // boidsObj[i].setPositionY(boidsObj[i].getPosition().y + boidsObj[i].getVelocity().y);
-            // window.draw(boids[i]);
-
-            // // If boid exits side boundary
-            // if (boids[i].getPosition().x > window_width-20 || boids[i].getPosition().x < 20)
-            //     boidsObj[i].setVelocityX(- boidsObj[i].getVelocity().x);
-                
-            // // If boid exits top bottom boundary
-            // if (boids[i].getPosition().y > window_height-20 || boids[i].getPosition().y < 20)
-            //     boidsObj[i].setVelocityY(- boidsObj[i].getVelocity().y);
-            
-            boidsObj[i].run(boidsObj);
         
-            boids[i].setPosition(boidsObj[i].getPosition().x,boidsObj[i].getPosition().y);
-            window.draw(boids[i]);
-
+        for (int i = 0; i < boidsObj.size(); i++)
+        {   
+            boidsObj[i].run(boidsObj,window);
         }
+        
+        
+        
         window.display();
     }
 }

@@ -13,7 +13,6 @@ class Simulation {
         void run();
     private:
         sf::RenderWindow window;
-        std::vector<sf::CircleShape> boids;
         std::vector<Boids> boidsObj;
         int window_width;
         int window_height;
