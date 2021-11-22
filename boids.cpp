@@ -2,6 +2,7 @@
 #include <random>
 #include "simulation.h"
 #include "boids.h"
+#include "globals.h"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 
@@ -52,8 +53,8 @@ void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
     int cohesionCount = 0;
     int seperationCount = 0;
 
-    float alignNeighborDist = 70;
-    float cohesionNeighborDist = 70;
+    float alignNeighborDist = 60;
+    float cohesionNeighborDist = 60;
     float seperationNeighborDist = 10;
 
     sf::Vector2f alignSum(0, 0);
@@ -75,15 +76,15 @@ void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
             //cohesion
             if (d < cohesionNeighborDist)
             {
-                cohesionSum.x += boidsObj[i].velocity.x;
-                cohesionSum.y += boidsObj[i].velocity.y;
+                cohesionSum.x += boidsObj[i].position.x;
+                cohesionSum.y += boidsObj[i].position.y;
                 cohesionCount++;
             }
 
             //seperation
             if (d < seperationNeighborDist)
             {
-                sf::Vector2f diff(0,0);
+                sf::Vector2f diff(0, 0);
                 diff.x = position.x - boidsObj[i].position.x;
                 diff.y = position.y - boidsObj[i].position.y;
 
@@ -102,19 +103,25 @@ void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
 
     if (alignCount > 0)
     {
-        sf::Vector2f alignForce = alignment(alignSum, alignCount, 3.7);
+        sf::Vector2f alignForce;
+        if (!cuda)
+            alignForce = alignment(alignSum, alignCount, 1.0);
         applyForce(alignForce);
     }
 
     if (cohesionCount > 0)
     {
-        sf::Vector2f cohesionForce = cohesion(cohesionSum, alignCount, 1.0);
+        sf::Vector2f cohesionForce;
+        if (!cuda)
+            cohesionForce = cohesion(cohesionSum, alignCount, 1.0);
         applyForce(cohesionForce);
     }
 
     if (seperationCount > 0)
     {
-        sf::Vector2f seperationForce = separation(seperationDiff, seperationCount, 1.0);
+        sf::Vector2f seperationForce;
+        if (!cuda)
+            seperationForce = separation(seperationDiff, seperationCount, 1.0);
         applyForce(seperationForce);
     }
 
@@ -125,7 +132,7 @@ void Boids::update(sf::RenderWindow &window)
 {
     //slowDown(0.9f);
     updateVelocity();
-    limitVelocity(7);
+    limitVelocity(6);
     updatePosition();
     checkBoundry();
     drawBoid(window);
@@ -174,7 +181,7 @@ void Boids::limitVelocity(float maxValue)
 
 void Boids::updatePosition()
 {
-    if (history.size() > 30)
+    if (history.size() > 25)
         history.erase(history.begin());
     history.push_back(sf::Vector2f(position.x, position.y));
     position.x += velocity.x;
@@ -183,25 +190,17 @@ void Boids::updatePosition()
 
 void Boids::checkBoundry()
 {
-    // //left right
-    // if (position.x > 700-20 || position.x < 20)
-    //     velocity.x = -velocity.x;
-
-    // //top bottom
-    // if (position.y > 700-20 || position.y < 20)
-    //     velocity.y = -velocity.y;
-
     //left right
-    if (position.x > 680)
-        position.x = 20;
-    if (position.x < 20)
-        position.x = 680;
+    if (position.x > outerBoxRight)
+        position.x = outerBoxLeft;
+    if (position.x < outerBoxLeft)
+        position.x = outerBoxRight;
 
     //top bottom
-    if (position.y > 680)
-        position.y = 20;
-    if (position.y < 20)
-        position.y = 680;
+    if (position.y > outerBoxRight)
+        position.y = outerBoxLeft;
+    if (position.y < outerBoxLeft)
+        position.y = outerBoxRight;
 }
 
 void Boids::applyForce(const sf::Vector2f &force)
@@ -213,24 +212,23 @@ void Boids::applyForce(const sf::Vector2f &force)
 sf::Vector2f Boids::separation(std::vector<sf::Vector2f> seperationDiff, int count, float power)
 {
     sf::Vector2f steer;
-    for(int i=0;i<seperationDiff.size();i++){
+    for (int i = 0; i < seperationDiff.size(); i++)
+    {
         steer.x += seperationDiff[i].x;
         steer.y += seperationDiff[i].y;
     }
-    
+
     steer.x /= count;
     steer.y /= count;
 
-    // if (magnitude(steer) > 0) {
-        normalize(steer);
-        steer.x *= 5;
-        steer.y *= 5;
-        steer.x -= velocity.x;
-        steer.y -= velocity.y;
-        steer.x *= power;
-        steer.y *= power;
-        limit(steer,5);
-    //}
+    normalize(steer);
+    steer.x *= 5;
+    steer.y *= 5;
+    steer.x -= velocity.x;
+    steer.y -= velocity.y;
+    steer.x *= power;
+    steer.y *= power;
+    limit(steer, 6);
     return steer;
 }
 sf::Vector2f Boids::alignment(sf::Vector2f sum, int count, float power)
@@ -249,7 +247,7 @@ sf::Vector2f Boids::alignment(sf::Vector2f sum, int count, float power)
     steer.x *= power;
     steer.y *= power;
 
-    //limit(steer,5);
+    limit(steer, 6);
     return steer;
 }
 sf::Vector2f Boids::cohesion(sf::Vector2f sum, int count, float power)
@@ -272,7 +270,7 @@ sf::Vector2f Boids::cohesion(sf::Vector2f sum, int count, float power)
     desired.x *= power;
     desired.y *= power;
 
-    limit(desired, 5);
+    limit(desired, 6);
     return desired;
 }
 

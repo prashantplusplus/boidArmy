@@ -13,7 +13,11 @@ Simulation::Simulation(int window_width, int window_height,int count)
 void Simulation::run()
 {
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Boids Army");
+    //sf::Texture backgroundT;
+    //backgroundT.loadFromFile("./tank.jpg");
+    //sf::Sprite s(backgroundT);
     window.setFramerateLimit(60);
+
     window.clear(sf::Color::White);
     for (int i = 0; i < boidsCount; i++)
     {
@@ -72,6 +76,7 @@ void Simulation::run()
 
     
         window.clear(sf::Color::White);
+        //window.draw(s);
         
         for (int i = 0; i < boidsObj.size(); i++)
         {   
