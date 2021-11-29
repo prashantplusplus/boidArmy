@@ -1,3 +1,4 @@
 boids-sim
 .DS_Store
 *.o
+.vscode

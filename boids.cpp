@@ -2,13 +2,15 @@
 #include <random>
 #include "simulation.h"
 #include "boids.h"
+//#include "boidsGPU.cuh"
 #include "globals.h"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+#define PI 3.14159263
 
 Boids::Boids(sf::Color color, sf::Vector2f position, sf::Vector2f velocity)
 {
-    this->circle_boid = sf::CircleShape(2);
+    this->circle_boid = sf::CircleShape(3);
     circle_boid.setFillColor(color);
     circle_boid.setPosition(position.x, position.y);
     this->color = color;
@@ -49,6 +51,17 @@ void Boids::setVelocityY(float value)
 
 void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
 {
+    if (!cuda){
+        calculateForces(boidsObj);
+        update(window);
+    }
+    else{
+        int blockSize = 256;
+        int numBlocks = (boidsObj.size() + blockSize - 1) / blockSize;
+        //boidsGPU<<<numBlocks,blockSize>>>(boidsObj,window);
+    } 
+}
+void Boids::calculateForces(std::vector<Boids> &boidsObj){
     int alignCount = 0;
     int cohesionCount = 0;
     int seperationCount = 0;
@@ -98,36 +111,29 @@ void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
             }
         }
 
-        //seperation
     }
 
     if (alignCount > 0)
     {
         sf::Vector2f alignForce;
-        if (!cuda)
-            alignForce = alignment(alignSum, alignCount, 1.0);
+        alignForce = alignment(alignSum, alignCount, 1.0);
         applyForce(alignForce);
     }
 
     if (cohesionCount > 0)
     {
         sf::Vector2f cohesionForce;
-        if (!cuda)
-            cohesionForce = cohesion(cohesionSum, alignCount, 1.0);
+        cohesionForce = cohesion(cohesionSum, alignCount, 1.0);
         applyForce(cohesionForce);
     }
 
     if (seperationCount > 0)
     {
         sf::Vector2f seperationForce;
-        if (!cuda)
-            seperationForce = separation(seperationDiff, seperationCount, 1.0);
+        seperationForce = separation(seperationDiff, seperationCount, 1.0);
         applyForce(seperationForce);
     }
-
-    update(window);
 }
-
 void Boids::update(sf::RenderWindow &window)
 {
     //slowDown(0.9f);
@@ -142,6 +148,8 @@ void Boids::update(sf::RenderWindow &window)
 void Boids::drawBoid(sf::RenderWindow &window)
 {
     circle_boid.setPosition(position.x, position.y);
+    //float theta = angle(velocity);
+    //circle_boid.setRotation(theta);
     window.draw(circle_boid);
 }
 void Boids::drawTrail(sf::RenderWindow &window)
@@ -153,7 +161,7 @@ void Boids::drawTrail(sf::RenderWindow &window)
         sf::CircleShape temp(2);
         tempColor.a = i + 2;
         temp.setFillColor(tempColor);
-        temp.setPosition(history[i].x, history[i].y);
+        temp.setPosition(history[i].x, history[i].y+2);
         window.draw(temp);
     }
 }
@@ -307,4 +315,11 @@ void Boids::limit(sf::Vector2f &v, double max)
         v.x /= size;
         v.y /= size;
     }
+}
+
+float Boids::angle(sf::Vector2f &v)
+{
+    // From the definition of the dot product
+    float angle = (float)(atan2(v.x, -v.y) * 180 / PI);
+    return angle;
 }

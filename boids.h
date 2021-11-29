@@ -29,6 +29,7 @@ private:
     sf::Vector2f velocity;
     std::vector<sf::Vector2f> history;
 
+    void calculateForces(std::vector<Boids> &boidsObj);
     void update(sf::RenderWindow& window);
     void drawBoid(sf::RenderWindow& window);
     void drawTrail(sf::RenderWindow& window);
@@ -44,6 +45,7 @@ private:
     float magnitude(sf::Vector2f& v);
     void normalize(sf::Vector2f & v);
     void limit(sf::Vector2f &v,double max);
+    float angle(sf::Vector2f &v);
 
     
 
