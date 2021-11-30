@@ -2,7 +2,6 @@
 #include <random>
 #include "simulation.h"
 #include "boids.h"
-//#include "boidsGPU.cuh"
 #include "globals.h"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
@@ -51,24 +50,17 @@ void Boids::setVelocityY(float value)
 
 void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
 {
-    if (!cuda){
-        calculateForces(boidsObj);
-        update(window);
-    }
-    else{
-        int blockSize = 256;
-        int numBlocks = (boidsObj.size() + blockSize - 1) / blockSize;
-        //boidsGPU<<<numBlocks,blockSize>>>(boidsObj,window);
-    } 
+    calculateForces(boidsObj);
+    update(window);
 }
 void Boids::calculateForces(std::vector<Boids> &boidsObj){
     int alignCount = 0;
     int cohesionCount = 0;
     int seperationCount = 0;
 
-    float alignNeighborDist = 60;
-    float cohesionNeighborDist = 60;
-    float seperationNeighborDist = 10;
+    float alignNeighborDist = 50;
+    float cohesionNeighborDist = 50;
+    float seperationNeighborDist = 6;
 
     sf::Vector2f alignSum(0, 0);
     sf::Vector2f cohesionSum(0, 0);
@@ -236,7 +228,7 @@ sf::Vector2f Boids::separation(std::vector<sf::Vector2f> seperationDiff, int cou
     steer.y -= velocity.y;
     steer.x *= power;
     steer.y *= power;
-    limit(steer, 6);
+    limit(steer, 7);
     return steer;
 }
 sf::Vector2f Boids::alignment(sf::Vector2f sum, int count, float power)
@@ -255,7 +247,7 @@ sf::Vector2f Boids::alignment(sf::Vector2f sum, int count, float power)
     steer.x *= power;
     steer.y *= power;
 
-    limit(steer, 6);
+    limit(steer, 7);
     return steer;
 }
 sf::Vector2f Boids::cohesion(sf::Vector2f sum, int count, float power)
@@ -278,7 +270,7 @@ sf::Vector2f Boids::cohesion(sf::Vector2f sum, int count, float power)
     desired.x *= power;
     desired.y *= power;
 
-    limit(desired, 6);
+    limit(desired, 7);
     return desired;
 }
 
