@@ -3,7 +3,8 @@
 ![Flocking Simulation with Grid Pruning](images/cpuBoids.gif)
 ###### CPU Simulation with 300 boids
 
-
+<br />
+<br />
 
 ```
 g++ -c -g simulation.cpp && 
