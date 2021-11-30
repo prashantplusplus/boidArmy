@@ -1,7 +1,7 @@
 # Boids Army
 
 ![Flocking Simulation with Grid Pruning](images/cpuBoids.gif)
-*Boid Flocking Simulation*
+###### CPU Simulation with 300 boids
 
 ```
 g++ -c -g simulation.cpp && 
