@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include "spatialHash.h"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 
@@ -23,7 +22,7 @@ public:
     sf::Vector2f getAcceleration();
     void setAccelerationX(float value);
     void setAccelerationY(float value);
-    void run(std::vector<Boids>& boidsObj, SpatialHash& grid,sf::RenderWindow& window);
+    void run(std::vector<Boids>& boidsObj, sf::RenderWindow& window);
 
     int spatialHashIndex;
     
@@ -37,7 +36,7 @@ private:
     sf::Vector2f velocity;
     std::vector<sf::Vector2f> history;
 
-    void calculateForces(std::vector<Boids> &boidsObj, SpatialHash& grid);
+    void calculateForces(std::vector<Boids> &boidsObj);
     void update(sf::RenderWindow& window);
     void drawBoid(sf::RenderWindow& window);
     void drawTrail(sf::RenderWindow& window);

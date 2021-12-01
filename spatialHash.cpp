@@ -5,6 +5,10 @@
 #include "globals.h"
 
 
+SpatialHash::SpatialHash()
+{
+
+}
 SpatialHash::SpatialHash(const sf::Vector2i &windowDimensions, int cellSize)
 {
 
@@ -17,20 +21,34 @@ SpatialHash::SpatialHash(const sf::Vector2i &windowDimensions, int cellSize)
 void SpatialHash::addBoid(Boids &boid)
 {
     int hashIndex = createIndex((int)boid.getPosition().x, (int)boid.getPosition().x);
-    hashGrid[hashIndex].insert(boid);
+    hashGrid[hashIndex].push_back(boid);
     boid.spatialHashIndex = hashIndex;
 }
 
 void SpatialHash::removeBoid(Boids &boid)
 {
-    hashGrid[boid.spatialHashIndex].erase(boid);
+    //hashGrid[boid.spatialHashIndex].erase(boid);
+    //hashGrid[boid.spatialHashIndex].erase(std::remove(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid), hashGrid[boid.spatialHashIndex].end());
+    // auto it = std::find(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid);
+    // if(it != hashGrid[boid.spatialHashIndex].end())
+    //     hashGrid[boid.spatialHashIndex].erase(it);
+    // std::vector<Boids> temp = hashGrid[boid.spatialHashIndex];
+
+    // auto it = std::find(temp.begin(), temp.end(), boid);
+    // if(it != temp.end())
+    //     temp.erase(it);
+
+    // hashGrid.erase(boid.spatialHashIndex);
+    //res.insert(res.end(), boids.begin(), boids.end());
+    //hashGrid[boid.spatialHashIndex] = temp;
+    hashGrid[boid.spatialHashIndex].pop_back();
 }
 
 void SpatialHash::updateBoid(Boids &boid)
 {
     int hashIndex = createIndex((int)boid.getPosition().x, (int)boid.getPosition().x);
 
-    if (key == boid.spatialHashIndex)
+    if (hashIndex == boid.spatialHashIndex)
     {
         return; //don't update
     }
@@ -66,22 +84,22 @@ std::vector<Boids> SpatialHash::gridSearch(Boids &boid, int radius)
     //insert my own grid
     int boidIndex = boid.spatialHashIndex;
 
-    auto boids = hashGrid[boidIndex];
+    std::vector<Boids> boids = hashGrid[boidIndex];
 
     res.insert(res.end(), boids.begin(), boids.end());
 
     //find adjacent grid in all direction
-    int xStart = max(boid.getPosition().x - radius, 0);
-    int xEnd = min(boid.getPosition().x + radius, windowDimensions.x - 1);
-    int yStart = max(boid.getPosition().y - radius, 0);
-    int yEnd = min(boid.getPosition().y + radius, windowDimensions.y - 1);
+    int xStart = std::max((int)boid.getPosition().x - radius, 0);
+    int xEnd = std::min((int)boid.getPosition().x + radius, windowDimensions.x - 1);
+    int yStart = std::max((int)boid.getPosition().y - radius, 0);
+    int yEnd = std::min((int)boid.getPosition().y + radius, windowDimensions.y - 1);
     for (int i = xStart; i < xEnd; i += gridDimensions.x)
     {
         for (int j = yStart; j < yEnd; j += gridDimensions.y)
         {
             int hashIndex = createIndex(i,j);
-            auto boids = hashGrid[hashIndex];
-            res.insert(res.end(), boids.begin(), boids.end());
+            std::vector<Boids> tempBoids = hashGrid[hashIndex];
+            res.insert(res.end(), tempBoids.begin(), tempBoids.end());
         }
     }
     

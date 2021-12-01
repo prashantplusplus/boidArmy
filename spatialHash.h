@@ -5,7 +5,8 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <set>
+#include <unordered_set>
+#include <algorithm>
 #include "boids.h"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
@@ -22,7 +23,7 @@ class SpatialHash {
         void updateBoid(Boids& boid);
         void clear();
         std::vector<Boids> gridSearch(Boids& boid, int radius);
-        std::unordered_map<int, std::set<Boids> > hashGrid;
+        std::unordered_map<int, std::vector<Boids> > hashGrid;
     private:
         int cellSize;
         sf::Vector2i gridDimensions; 

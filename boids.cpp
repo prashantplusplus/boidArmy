@@ -61,12 +61,12 @@ void Boids::setAccelerationY(float value)
     acceleration.y = value;
 }
 
-void Boids::run(std::vector<Boids> &boidsObj, SpatialHash& grid , sf::RenderWindow &window)
+void Boids::run(std::vector<Boids> &boidsObj , sf::RenderWindow &window)
 {
-    calculateForces(boidsObj, grid);
+    calculateForces(boidsObj);
     update(window);
 }
-void Boids::calculateForces(std::vector<Boids> &boidsObj,SpatialHash& grid){
+void Boids::calculateForces(std::vector<Boids> &boidsObj){
     int alignCount = 0;
     int cohesionCount = 0;
     int seperationCount = 0;
@@ -79,25 +79,24 @@ void Boids::calculateForces(std::vector<Boids> &boidsObj,SpatialHash& grid){
     sf::Vector2f cohesionSum(0, 0);
     std::vector<sf::Vector2f> seperationDiff;
 
-    std::vector<Boids> boidsToConsider = grid.gridSearch(this,60);
-    for (int i = 0; i < boidsToConsider.size(); i++)
+    for (int i = 0; i < boidsObj.size(); i++)
     {
-        float d = findDistance(boidsToConsider[i].position);
+        float d = findDistance(boidsObj[i].position);
         if (d > 0)
         {
             //alignment
             if (d < alignNeighborDist)
             {
-                alignSum.x += boidsToConsider[i].velocity.x;
-                alignSum.y += boidsToConsider[i].velocity.y;
+                alignSum.x += boidsObj[i].velocity.x;
+                alignSum.y += boidsObj[i].velocity.y;
                 alignCount++;
             }
 
             //cohesion
             if (d < cohesionNeighborDist)
             {
-                cohesionSum.x += boidsToConsider[i].position.x;
-                cohesionSum.y += boidsToConsider[i].position.y;
+                cohesionSum.x += boidsObj[i].position.x;
+                cohesionSum.y += boidsObj[i].position.y;
                 cohesionCount++;
             }
 
@@ -105,8 +104,8 @@ void Boids::calculateForces(std::vector<Boids> &boidsObj,SpatialHash& grid){
             if (d < seperationNeighborDist)
             {
                 sf::Vector2f diff(0, 0);
-                diff.x = position.x - boidsToConsider[i].position.x;
-                diff.y = position.y - boidsToConsider[i].position.y;
+                diff.x = position.x - boidsObj[i].position.x;
+                diff.y = position.y - boidsObj[i].position.y;
 
                 normalize(diff);
 

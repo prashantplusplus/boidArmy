@@ -11,8 +11,10 @@ Simulation::Simulation(int window_width, int window_height, int count)
     this->boidsCount = count;
     this->window_width = window_width;
     this->window_height = window_height;
-    SpatialHash temp_grid;
-    this->grid = temp_grid;
+    
+    //Creating hash grid for boids
+    SpatialHash temp_grid(sf::Vector2i(window_width, window_height) ,60);
+    grid = std::move(temp_grid);
 }
 void Simulation::run()
 {
@@ -23,10 +25,7 @@ void Simulation::run()
     window.setFramerateLimit(60);
 
     window.clear(sf::Color::White);
-
-    //Creating hash grid for boids
-    SpatialHash temp_grid(sf::Vector2i(window_width, window_height) ,60);
-    grid = std::move(temp_grid);
+    
 
     //Creating Random boids
     for (int i = 0; i < boidsCount; i++)
@@ -95,7 +94,9 @@ void Simulation::run()
             //CPU
             for (int i = 0; i < boidsObj.size(); i++)
             {
-                boidsObj[i].run(boidsObj, grid, window);
+                std::vector<Boids> toSearch;
+                toSearch = grid.gridSearch(boidsObj[i], 60);
+                boidsObj[i].run(toSearch, window);
             }
         }
         else
