@@ -28,6 +28,11 @@ sf::Vector2f Boids::getVelocity()
     return velocity;
 }
 
+sf::Vector2f Boids::getAcceleration()
+{
+    return acceleration;
+}
+
 void Boids::setPositionX(float value)
 {
     position.x = value;
@@ -46,6 +51,16 @@ void Boids::setVelocityX(float value)
 void Boids::setVelocityY(float value)
 {
     velocity.y = value;
+}
+
+void Boids::setAccelerationX(float value)
+{
+    acceleration.x = value;
+}
+
+void Boids::setAccelerationY(float value)
+{
+    acceleration.y = value;
 }
 
 void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)

@@ -17,6 +17,11 @@ public:
     sf::Vector2f getVelocity();
     void setPositionX(float value);
     void setPositionY(float value);
+
+
+    sf::Vector2f getAcceleration();
+    void setAccelerationX(float value);
+    void setAccelerationY(float value);
     void run(std::vector<Boids>& boidsObj,sf::RenderWindow& window);
     
 
