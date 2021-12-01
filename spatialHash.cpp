@@ -27,7 +27,7 @@ void SpatialHash::addBoid(Boids &boid)
 
 void SpatialHash::removeBoid(Boids &boid)
 {
-    //hashGrid[boid.spatialHashIndex].erase(boid);
+    hashGrid[boid.spatialHashIndex].erase(boid);
     //hashGrid[boid.spatialHashIndex].erase(std::remove(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid), hashGrid[boid.spatialHashIndex].end());
     // auto it = std::find(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid);
     // if(it != hashGrid[boid.spatialHashIndex].end())
@@ -41,7 +41,7 @@ void SpatialHash::removeBoid(Boids &boid)
     // hashGrid.erase(boid.spatialHashIndex);
     //res.insert(res.end(), boids.begin(), boids.end());
     //hashGrid[boid.spatialHashIndex] = temp;
-    hashGrid[boid.spatialHashIndex].pop_back();
+    //hashGrid[boid.spatialHashIndex].pop_back();
 }
 
 void SpatialHash::updateBoid(Boids &boid)
