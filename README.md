@@ -16,7 +16,7 @@ The Boids follow 3 simple rules:
 - To make it faster using some form of data structure like Quad Tree or [Spatial Hashing](http://www.cs.ucf.edu/~jmesit/publications/scsc%202005.pdf)
 ![Spatial Hashing](images/spatialHashing.png)
 
-- Use GPU to paralleize the calculation, as each boid' calculation is independent
+- Use GPU to parallelize the calculation, as each boid' calculation is independent
 - Make it 3D
 
 
