@@ -7,7 +7,7 @@ Boids is an artificial life program, developed by Craig Reynolds in 1986, which 
 The Boids follow 3 simple rules:
 
 - Alignment - steer towards the average heading of local flockmates
-- Cohesion - steer to avoid crowding local flockmates
+- Cohesion - steer to move toward the average position of local flockmates
 - Seperation - steer to avoid crowding local flockmates
 
 
