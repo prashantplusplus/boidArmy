@@ -40,5 +40,5 @@ g++ -c -g boids.cpp &&
 g++ -c -g spatialHash.cpp && 
 g++ -c -o main.o main.cpp && 
 g++ -g simulation.o boids.o spatialHash.o main.o -o boids-sim -lsfml-graphics -lsfml-window -lsfml-system && 
-./boids-sim <windowWidth> <windowHeight> <numBoids>
+./boids-sim <windowWidth> <windowHeight> <numBoids> <gpu>
 ```
