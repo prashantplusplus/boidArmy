@@ -11,16 +11,24 @@ Simulation::Simulation(int window_width, int window_height, int count)
     this->boidsCount = count;
     this->window_width = window_width;
     this->window_height = window_height;
+    SpatialHash temp_grid;
+    this->grid = temp_grid;
 }
 void Simulation::run()
 {
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Boids Army");
     //sf::Texture backgroundT;
-    //backgroundT.loadFromFile("./tank.jpg");
+    //backgroundT.loadFromFile("./images/tank.jpg");
     //sf::Sprite s(backgroundT);
     window.setFramerateLimit(60);
 
     window.clear(sf::Color::White);
+
+    //Creating hash grid for boids
+    SpatialHash temp_grid(sf::Vector2i(window_width, window_height) ,60);
+    grid = std::move(temp_grid);
+
+    //Creating Random boids
     for (int i = 0; i < boidsCount; i++)
     {
         std::random_device rd;                                          // obtain a random number from hardware
@@ -64,7 +72,11 @@ void Simulation::run()
         Boids boid_object(color, pos, velocity);
 
         boidsObj.push_back(boid_object);
+
+        //adding boidsObj to our spatialHash grid
+        grid.addBoid(boid_object);
     }
+
 
     while (window.isOpen())
     {
@@ -78,17 +90,19 @@ void Simulation::run()
         window.clear(sf::Color::White);
         //window.draw(s);
 
-        // if (!cuda)
-        // {
+        if (!cuda)
+        {
+            //CPU
             for (int i = 0; i < boidsObj.size(); i++)
             {
-                boidsObj[i].run(boidsObj, window);
+                boidsObj[i].run(boidsObj, grid, window);
             }
-        //}
-        // else
-        // {
-        //     boidsGPU(boidsObj, window);
-        // }
+        }
+        else
+        {
+            //GPU
+            //boidsGPU(boidsObj, window);
+        }
 
         window.display();
     }

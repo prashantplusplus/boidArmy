@@ -1,10 +1,7 @@
 #include <iostream>
 #include <random>
-#include "simulation.h"
 #include "boids.h"
 #include "globals.h"
-#include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
 #define PI 3.14159263
 
 Boids::Boids(sf::Color color, sf::Vector2f position, sf::Vector2f velocity)
@@ -16,6 +13,7 @@ Boids::Boids(sf::Color color, sf::Vector2f position, sf::Vector2f velocity)
     this->position = position;
     this->velocity = velocity;
     this->acceleration = sf::Vector2f(0, 0);
+    this->spatialHashIndex = 0;
 }
 
 sf::Vector2f Boids::getPosition()
@@ -63,41 +61,43 @@ void Boids::setAccelerationY(float value)
     acceleration.y = value;
 }
 
-void Boids::run(std::vector<Boids> &boidsObj, sf::RenderWindow &window)
+void Boids::run(std::vector<Boids> &boidsObj, SpatialHash& grid , sf::RenderWindow &window)
 {
-    calculateForces(boidsObj);
+    calculateForces(boidsObj, grid);
     update(window);
 }
-void Boids::calculateForces(std::vector<Boids> &boidsObj){
+void Boids::calculateForces(std::vector<Boids> &boidsObj,SpatialHash& grid){
     int alignCount = 0;
     int cohesionCount = 0;
     int seperationCount = 0;
 
     float alignNeighborDist = 50;
     float cohesionNeighborDist = 50;
-    float seperationNeighborDist = 6;
+    float seperationNeighborDist = 7;
 
     sf::Vector2f alignSum(0, 0);
     sf::Vector2f cohesionSum(0, 0);
     std::vector<sf::Vector2f> seperationDiff;
-    for (int i = 0; i < boidsObj.size(); i++)
+
+    std::vector<Boids> boidsToConsider = grid.gridSearch(this,60);
+    for (int i = 0; i < boidsToConsider.size(); i++)
     {
-        float d = findDistance(boidsObj[i].position);
+        float d = findDistance(boidsToConsider[i].position);
         if (d > 0)
         {
             //alignment
             if (d < alignNeighborDist)
             {
-                alignSum.x += boidsObj[i].velocity.x;
-                alignSum.y += boidsObj[i].velocity.y;
+                alignSum.x += boidsToConsider[i].velocity.x;
+                alignSum.y += boidsToConsider[i].velocity.y;
                 alignCount++;
             }
 
             //cohesion
             if (d < cohesionNeighborDist)
             {
-                cohesionSum.x += boidsObj[i].position.x;
-                cohesionSum.y += boidsObj[i].position.y;
+                cohesionSum.x += boidsToConsider[i].position.x;
+                cohesionSum.y += boidsToConsider[i].position.y;
                 cohesionCount++;
             }
 
@@ -105,8 +105,8 @@ void Boids::calculateForces(std::vector<Boids> &boidsObj){
             if (d < seperationNeighborDist)
             {
                 sf::Vector2f diff(0, 0);
-                diff.x = position.x - boidsObj[i].position.x;
-                diff.y = position.y - boidsObj[i].position.y;
+                diff.x = position.x - boidsToConsider[i].position.x;
+                diff.y = position.y - boidsToConsider[i].position.y;
 
                 normalize(diff);
 
