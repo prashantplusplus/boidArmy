@@ -9,8 +9,8 @@
 #define BOID_CU_H_
 
 void boidsGPU(std::vector<Boids> &boidsObj,sf::RenderWindow& window);
-// void initBoidIDs(std::vector<Boids> &boidsObj, int maxBoids);
-// void calculateForcesGPU(float *ax, float *ay)
+void initBoidIDs(std::vector<Boids> &boidsObj, float *boids,int maxBoids);
+void calculateForcesGPU(float *px, float *py, float *vx, float *vy, float *ax, float *ay, float *boid)
 
 
 #endif
