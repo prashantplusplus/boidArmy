@@ -18,33 +18,25 @@ SpatialHash::SpatialHash(const sf::Vector2i &windowDimensions, int cellSize)
     this->gridDimensions.y = ceil((float)windowDimensions.y / (float)cellSize);
 }
 
-void SpatialHash::addBoid(Boids &boid)
+void SpatialHash::addBoid(Boids& boid)
 {
     int hashIndex = createIndex((int)boid.getPosition().x, (int)boid.getPosition().x);
     hashGrid[hashIndex].push_back(boid);
     boid.spatialHashIndex = hashIndex;
 }
 
-void SpatialHash::removeBoid(Boids &boid)
-{
-    hashGrid[boid.spatialHashIndex].erase(boid);
-    //hashGrid[boid.spatialHashIndex].erase(std::remove(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid), hashGrid[boid.spatialHashIndex].end());
-    // auto it = std::find(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid);
-    // if(it != hashGrid[boid.spatialHashIndex].end())
-    //     hashGrid[boid.spatialHashIndex].erase(it);
-    // std::vector<Boids> temp = hashGrid[boid.spatialHashIndex];
-
-    // auto it = std::find(temp.begin(), temp.end(), boid);
-    // if(it != temp.end())
-    //     temp.erase(it);
-
-    // hashGrid.erase(boid.spatialHashIndex);
-    //res.insert(res.end(), boids.begin(), boids.end());
-    //hashGrid[boid.spatialHashIndex] = temp;
-    //hashGrid[boid.spatialHashIndex].pop_back();
+bool operator==(const Boids& left, const Boids& right) {
+    return &left == &right;
 }
 
-void SpatialHash::updateBoid(Boids &boid)
+void SpatialHash::removeBoid(Boids boid)
+{
+    std::vector<Boids>::iterator iter = std::find(hashGrid[boid.spatialHashIndex].begin(), hashGrid[boid.spatialHashIndex].end(), boid);
+    if (iter != hashGrid[boid.spatialHashIndex].end())
+        hashGrid[boid.spatialHashIndex].erase(iter);
+}
+
+void SpatialHash::updateBoid(Boids& boid)
 {
     int hashIndex = createIndex((int)boid.getPosition().x, (int)boid.getPosition().x);
 

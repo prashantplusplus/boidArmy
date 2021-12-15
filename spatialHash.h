@@ -19,7 +19,7 @@ class SpatialHash {
         SpatialHash();
         SpatialHash(const sf::Vector2i& winDim, int cellSize);
         void addBoid(Boids& boid);
-        void removeBoid(Boids& boid);
+        void removeBoid(Boids boid);
         void updateBoid(Boids& boid);
         void clear();
         std::vector<Boids> gridSearch(Boids& boid, int radius);
